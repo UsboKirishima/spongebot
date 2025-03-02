@@ -29,14 +29,7 @@ interface TokenRegex {
 
 export class Hierarchy {
 
-    public static token: TokenRegex = {
-        admin: /^AD[a-fA-F0-9]{30}$/,         // `AD{30 others hexadecimal chars}`
-        operator: /^OP[a-fA-F0-9]{30}$/,      // `OP{30 others hexadecimal chars}`
-        supervisor: /^SV[a-fA-F0-9]{30}$/,    // `SV{30 others hexadecimal chars}`
-        bot: /^BT[a-fA-F0-9]{30}$/,           // `BT{30 others hexadecimal chars}`
-        customer: /^CS[a-fA-F0-9]{30}$/       // `CS{30 others hexadecimal chars}`
-    };
-
+    
     private static rolePrefixMap: Record<HierarchyRole, string> = {
         admin: 'AD',
         operator: 'OP',
@@ -44,6 +37,17 @@ export class Hierarchy {
         bot: 'BT',
         customer: 'CS'
     };
+    
+    public static genericTokenExp: RegExp = new RegExp(
+        `^(${Object.values(Hierarchy.rolePrefixMap).join("|")})[a-fA-F0-9]{30}$`
+    );;
+
+    public static token: Record<HierarchyRole, RegExp> = Object.fromEntries(
+        Object.entries(Hierarchy.rolePrefixMap).map(([role, prefix]) => [
+            role,
+            new RegExp(`^${prefix}[a-fA-F0-9]{30}$`)
+        ])
+    ) as Record<HierarchyRole, RegExp>;
 
     /**
      * Generates a token for the given role.
@@ -60,5 +64,18 @@ export class Hierarchy {
         ).join('');
 
         return `${prefix}${hexNumber30}`;
+    }
+
+    public static validateToken(token: string): boolean {
+
+        token = token.trim();
+
+        if(token === undefined || token === null)
+            return false;
+        
+        if(!this.genericTokenExp.test(token))
+            return false;
+
+        return true;
     }
 };
