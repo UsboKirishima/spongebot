@@ -49,6 +49,7 @@ int connection_init(int *client_fd, struct sockaddr_in *server_address, const ch
 ssize_t send_http_request(int client_fd, const char *host, const char *path) {
     char request[BUFFER_SIZE];
 
+    //TODO: each request needs to be saved on dictionary
     snprintf(request, sizeof(request),
              "GET %s HTTP/1.1\r\n"
              "Host: %s\r\n"

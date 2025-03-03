@@ -62,7 +62,7 @@ const char *dict_get(int index) {
     xor_encrypt_decrypt(decrypted_value, dict[index].value_len, XOR_KEY);
 
     return decrypted_value;
-}
+}    
 
 void dict_free(void) {
     for (int i = 0; i < DICT_MAX_ITEMS; i++) {
