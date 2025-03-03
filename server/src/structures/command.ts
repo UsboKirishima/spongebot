@@ -1,8 +1,6 @@
 import { handleServiceResponse, HttpMethod } from "@/common/utils/httpHandlers";
 import { HierarchyRole } from "./hierarchy";
-import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Request, type Response, type Router } from "express";
-import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import z from "zod";
 
@@ -24,7 +22,6 @@ export interface ICommand {
 
 export abstract class Command implements ICommand {
     protected options: CommandOptions;
-    protected commandRegistry = new OpenAPIRegistry();
     protected commandRouter: Router = express.Router();
 
     public constructor(options: CommandOptions) {
@@ -88,13 +85,6 @@ export abstract class Command implements ICommand {
     private registerOpenAPI(): void {
         
 
-        this.commandRegistry.registerPath({
-            method: 'post',
-            path: this.options.path,
-            tags: this.options.tags,
-            summary: this.options.description,
-            responses: createApiResponse(z.null(), "Success"),
-        });
 
     }
 }
