@@ -71,12 +71,7 @@ int main(int argc, char **argv) {
 
         //command manager
         
-        if(strcmp(get_last_line((char *)response), " ping")) {
-#ifdef DEBUG
-            printf("PINGGGG");
-#endif
-        }
-
+       
         
 #ifdef DEBUG
         sleep(2); // delay between requests (in seconds)

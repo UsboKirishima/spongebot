@@ -12,6 +12,7 @@ import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
 import { tokenRouter } from "./api/token/tokenRouter";
 import { pollingRouter } from "@/api/polling/pollingRouter";
+import { queueRouter } from "./api/queue/queueRouter";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -34,6 +35,7 @@ app.use("/health-check", healthCheckRouter);
 app.use("/users", userRouter);
 app.use("/token", tokenRouter);
 app.use("/polling", pollingRouter);
+app.use("/queue", queueRouter);
 
 // Swagger UI
 //app.use(openAPIRouter);
