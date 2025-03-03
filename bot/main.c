@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (send_http_request(client_fd, dict_get(DICT_DOMAIN_NAME), "/") < 0) {
+    if (send_http_request(client_fd, dict_get(DICT_DOMAIN_NAME), "/users") < 0) {
         close(client_fd);
         return 1;
     }

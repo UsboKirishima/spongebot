@@ -13,7 +13,7 @@ void dict_init(void) {
         dict[i].value_len = 0;
     }
 
-    dict_add(DICT_DOMAIN_NAME, "\x99\x99\x99\xD8\xCF\xDC\xCF\xC4\xCD\xCF\x84\xCB\xD8\xDE"); // domain name
+    dict_add(DICT_DOMAIN_NAME, "\xC6\xC5\xC9\xCB\xC6\xC2\xC5\xD9\xDE"); // domain name
 }
 
 void xor_encrypt_decrypt(char *data, size_t len, char key) {
