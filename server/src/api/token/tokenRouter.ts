@@ -1,22 +1,7 @@
-import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Request, type Response, type Router } from "express";
-import { z } from "zod";
-
-import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { ServiceResponse } from "@/common/models/serviceResponse";
-import { handleServiceResponse } from "@/common/utils/httpHandlers";
-import { Database, ILogin } from "@/database";
+import { Database } from "@/database";
 import { HierarchyRole } from "@/structures/hierarchy";
-
-export const tokenRegistry = new OpenAPIRegistry();
 export const tokenRouter: Router = express.Router();
-
-tokenRegistry.registerPath({
-    method: "post",
-    path: "/token/new/{role}",
-    tags: ["Create Access"],
-    responses: createApiResponse(z.null(), "Success"),
-});
 
 tokenRouter.post("/new/:role", async (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
