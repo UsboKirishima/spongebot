@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-
 #include <stdio.h>
 
 #define SERVER_PORT 8080
