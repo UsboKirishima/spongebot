@@ -1,6 +1,6 @@
 import { QuickDB } from "quick.db";
-import { HierarchyRole } from "./structures/hierarchy";
-import { Hierarchy } from "./structures/hierarchy";
+import { HierarchyRole } from "./hierarchy";
+import { Hierarchy } from "./hierarchy";
 import { Queue, QueueStatus } from "./queue";
 
 export interface ILogin {

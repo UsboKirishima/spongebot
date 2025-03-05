@@ -3,7 +3,6 @@ import express, { type Express } from "express";
 import helmet from "helmet";
 import { pino } from "pino";
 
-import { healthCheckRouter } from "@/api/healthCheck/healthCheckRouter";
 import errorHandler from "@/common/middleware/errorHandler";
 import rateLimiter from "@/common/middleware/rateLimiter";
 import requestLogger from "@/common/middleware/requestLogger";
@@ -28,7 +27,6 @@ app.use(helmet());
 app.use(requestLogger);
 
 // Routes
-app.use("/health-check", healthCheckRouter);
 app.use("/token", tokenRouter);
 app.use("/polling", pollingRouter);
 app.use("/queue", queueRouter);

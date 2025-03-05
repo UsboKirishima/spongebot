@@ -1,6 +1,6 @@
 import express, { type Request, type Response, type Router } from "express";
 import { Database } from "@/database";
-import { HierarchyRole } from "@/structures/hierarchy";
+import { HierarchyRole } from "@/hierarchy";
 export const tokenRouter: Router = express.Router();
 
 tokenRouter.post("/new/:role", async (req: Request, res: Response) => {

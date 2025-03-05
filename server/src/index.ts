@@ -1,6 +1,6 @@
 import { env } from "@/common/utils/envConfig";
 import { app, logger } from "@/server";
-import { Hierarchy } from "./structures/hierarchy";
+import { Hierarchy } from "./hierarchy";
 import { Database } from "./database";
 import { tcpServer } from './tcp_server';
 
