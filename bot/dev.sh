@@ -1,5 +1,15 @@
+#!/bin/bash
+
 # TODO: check dependencies
+
+
 rm -rf build
 mkdir build
-gcc -std=c99 -Wall -DDEBUG $(find . -name "*.c") -o build/bot
+
+if [ "$1" == "safe" ]; then
+    gcc -std=c99 -Wall $(find . -name "*.c") -o build/bot
+else
+    gcc -std=c99 -Wall -DDEBUG $(find . -name "*.c") -o build/bot
+fi
+
 ./build/bot

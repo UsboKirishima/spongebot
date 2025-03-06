@@ -10,12 +10,11 @@
 #include <sys/ioctl.h>
 #include <string.h>
 
-#include "http_client.h"
 #include "ram_mem.h"
 #include "utils.h"
 #include "receiver.h"
 
-#define RESPONSE_SIZE 8192
+#define RESPONSE_SIZE 4096
 
 int main(int argc, char **argv)
 {

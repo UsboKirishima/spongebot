@@ -1,11 +1,7 @@
 #define _GNU_SOURCE
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
+
+#include "receiver.h"
 
 #define SERVER_PORT 8080
 #define BUFFER_SIZE 4096 

@@ -1,0 +1,7 @@
+[ ] Attack management from server
+[ ] Request encryption
+[ ] Bot DdoS scripts
+[ ] Updating easy client (for owner)
+[ ] Bot hiding
+[ ] Bot diffusion method
+[ ] Creating client (for users)
