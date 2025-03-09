@@ -16,7 +16,7 @@
 
 #define RESPONSE_SIZE 4096
 
-int main(int argc, char **argv)
+int main(void)
 {
 
     dict_init();

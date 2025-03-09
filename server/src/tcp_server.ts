@@ -1,8 +1,21 @@
 import net from 'net';
 import { logger } from './server';
+import { Database } from './database';
+import { SocketManager } from './clients';
 
-export const tcpServer = net.createServer((socket) => {
-    logger.info("New Client connected: " + socket.remoteAddress?.toString());
+export const tcpServer = net.createServer(async (socket) => {
+
+    const ipAdrr = socket.remoteAddress?.toString();
+
+    logger.info("New Client connected: " + ipAdrr);
+
+    if (ipAdrr === undefined || !ipAdrr)
+        return logger.info('Failed to fetch ip address');
+
+    await SocketManager.addSocket(ipAdrr, socket).then(() => {
+        logger.info("New ip address added to database: " + ipAdrr);
+    });
+
 
     socket.on("data", (data) => {
         console.log(`Received from client: ${data.toString()}`);
@@ -11,7 +24,8 @@ export const tcpServer = net.createServer((socket) => {
         socket.write("Message received!\n");
     });
 
-    socket.on("end", () => {
+    socket.on("end", async () => {
+        await SocketManager.removeSocket(ipAdrr);
         logger.info("TCP Client disconnected");
     });
 

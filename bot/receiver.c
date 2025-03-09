@@ -1,12 +1,12 @@
 #define _GNU_SOURCE
 
-
 #include "receiver.h"
 
 #define SERVER_PORT 8080
-#define BUFFER_SIZE 4096 
+#define BUFFER_SIZE 4096
 
-int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char *server_host) {
+int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char *server_host)
+{
     struct addrinfo hints, *res;
     int status;
 
@@ -15,7 +15,8 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
     hints.ai_socktype = SOCK_STREAM; // TCP
 
     status = getaddrinfo(server_host, NULL, &hints, &res);
-    if (status != 0) {
+    if (status != 0)
+    {
 #ifdef DEBUG
         fprintf(stderr, "[http] getaddrinfo error: %s\n", gai_strerror(status));
 #endif
@@ -23,7 +24,8 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
     }
 
     *client_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (*client_fd < 0) {
+    if (*client_fd < 0)
+    {
 #ifdef DEBUG
         perror("[http] Error creating socket");
 #endif
@@ -38,7 +40,8 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
 
     freeaddrinfo(res);
 
-    if (connect(*client_fd, (struct sockaddr *)server_address, sizeof(*server_address)) < 0) {
+    if (connect(*client_fd, (struct sockaddr *)server_address, sizeof(*server_address)) < 0)
+    {
 #ifdef DEBUG
         perror("[http] Connection failed");
 #endif
@@ -52,20 +55,24 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
     return 0;
 }
 
-ssize_t recv_server_command(int client_fd, char *buffer, size_t buffer_size) {
+ssize_t recv_server_command(int client_fd, char *buffer, size_t buffer_size)
+{
     ssize_t total_received = 0, bytes_received;
 
     memset(buffer, 0, buffer_size);
 
-    while (total_received < buffer_size - 1) {
+    while (total_received < buffer_size - 1)
+    {
         bytes_received = recv(client_fd, buffer + total_received, buffer_size - total_received - 1, 0);
-        if (bytes_received < 0) {
+        if (bytes_received < 0)
+        {
 #ifdef DEBUG
             perror("[http] Error receiving response");
 #endif
             return -1;
         }
-        if (bytes_received == 0) { 
+        if (bytes_received == 0)
+        {
 #ifdef DEBUG
             printf("[http] Connection closed by server\n");
 #endif
@@ -76,4 +83,3 @@ ssize_t recv_server_command(int client_fd, char *buffer, size_t buffer_size) {
 
     return total_received;
 }
-

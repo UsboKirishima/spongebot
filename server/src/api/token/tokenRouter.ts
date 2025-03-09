@@ -1,6 +1,8 @@
 import express, { type Request, type Response, type Router } from "express";
 import { Database } from "@/database";
 import { HierarchyRole } from "@/hierarchy";
+import { TokenManager } from "@/tokens";
+
 export const tokenRouter: Router = express.Router();
 
 tokenRouter.post("/new/:role", async (req: Request, res: Response) => {
@@ -15,11 +17,11 @@ tokenRouter.post("/new/:role", async (req: Request, res: Response) => {
     if (!role)
         return res.status(403).json({ error: "Missing parameter `role` e.g. /token/new/customer" })
 
-    if (!await Database.tokenHasRole(authHeader, 'admin')) {
+    if (!await TokenManager.tokenHasRole(authHeader, 'admin')) {
         return res.status(403).json({ error: "Token or role not valid for this action." });
     }
 
-    const login = await Database.createAndSaveLogin(role as HierarchyRole);
+    const login = await TokenManager.createAndSaveLogin(role as HierarchyRole);
 
     return res.json({ token: login?.token, role: login?.role });
 });
@@ -32,15 +34,15 @@ tokenRouter.post("/delete/:token", async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Missing Authorization header" });
     }
 
-    if (!await Database.tokenHasRole(authHeader, 'admin')) {
+    if (!await TokenManager.tokenHasRole(authHeader, 'admin')) {
         return res.status(403).json({ error: "Auth Token or role not valid for this action." });
     }
 
-    if(!await Database.isTokenRecognized(token)) {
+    if(!await TokenManager.isTokenRecognized(token)) {
         return res.status(403).json({ error: 'Token not valid' });
     }
 
-    if(!await Database.deleteToken(token)) {
+    if(!await TokenManager.deleteToken(token)) {
         return res.status(403).json({ error: 'Failed to delete token' })
     }
 
@@ -56,11 +58,11 @@ tokenRouter.post("/:token", async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Missing Authorization header" });
     }
 
-    if (!await Database.tokenHasRole(authHeader, 'admin')) {
+    if (!await TokenManager.tokenHasRole(authHeader, 'admin')) {
         return res.status(403).json({ error: "Auth Token or role not valid for this action." });
     }
 
-    if(!await Database.isTokenRecognized(token)) {
+    if(!await TokenManager.isTokenRecognized(token)) {
         return res.status(403).json({ error: 'Token not valid' });
     }
 

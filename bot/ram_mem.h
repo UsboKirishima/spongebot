@@ -1,7 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-struct dict_item {
+struct dict_item
+{
   char *value;
   uint16_t value_len;
 };
@@ -15,4 +16,3 @@ const char *dict_get(int index);
 void dict_free(void);
 
 void xor_encrypt_decrypt(char *data, size_t len, char key);
-

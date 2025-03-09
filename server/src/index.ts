@@ -3,6 +3,7 @@ import { app, logger } from "@/server";
 import { Hierarchy } from "./hierarchy";
 import { Database } from "./database";
 import { tcpServer } from './tcp_server';
+import { TokenManager } from "./tokens";
 
 // HTTP Server
 const server = app.listen(env.HTTP_PORT, async () => {
@@ -10,8 +11,8 @@ const server = app.listen(env.HTTP_PORT, async () => {
   logger.info(`Server (${NODE_ENV}) running on port http://${HOST}:${HTTP_PORT}`);
 
 
-  if (process.env.OWNER_TOKEN !== '' && !await Database.isTokenRecognized(process.env.OWNER_TOKEN as string)) {
-    await Database.forceInsertToken(process.env.OWNER_TOKEN as string, 'admin');
+  if (process.env.OWNER_TOKEN !== '' && !await TokenManager.isTokenRecognized(process.env.OWNER_TOKEN as string)) {
+    await TokenManager.forceInsertToken(process.env.OWNER_TOKEN as string, 'admin');
   }
 });
 
