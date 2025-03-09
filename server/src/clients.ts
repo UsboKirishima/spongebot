@@ -12,13 +12,13 @@ export class SocketManager {
      */
     public static async addSocket(ip: string, socket: net.Socket): Promise<void> {
         const addresses = await this.db.get("addresses") || [];
+        this.sockets.set(ip, socket);
 
         if (!addresses.some((entry: { ip: string }) => entry.ip === ip)) {
             const socketInfo = { ip, port: (socket.remotePort || 0) };
             await this.db.push("addresses", socketInfo);
         }
 
-        this.sockets.set(ip, socket);
     }
 
     /**
@@ -73,6 +73,18 @@ export class SocketManager {
                 console.log(`Reconnected to ${ip}:${port}`);
                 this.sockets.set(ip, socket);
             });
+        }
+    }
+
+    /**
+     * Send a message to all connected sockets
+     * @param message - The message to send
+     */
+    public static async broadcastMessage(message: string): Promise<void> {
+        for (const [ip, socket] of this.sockets.entries()) {
+            //if (!socket.destroyed) {
+                socket.write(message);
+            //}
         }
     }
 }

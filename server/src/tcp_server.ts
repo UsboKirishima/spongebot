@@ -19,10 +19,7 @@ export const tcpServer = net.createServer(async (socket) => {
 
     socket.on("data", (data) => {
         console.log(`Received from client: ${data.toString()}`);
-
-
-        socket.write("Message received!\n");
-    });
+    })
 
     socket.on("end", async () => {
         await SocketManager.removeSocket(ipAdrr);

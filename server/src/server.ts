@@ -9,6 +9,7 @@ import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
 import { tokenRouter } from "./api/token/tokenRouter";
 import { queueRouter } from "./api/queue/queueRouter";
+import { commandRouter } from "./api/command/commandRouter";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -28,6 +29,7 @@ app.use(requestLogger);
 // Routes
 app.use("/token", tokenRouter);
 app.use("/queue", queueRouter);
+app.use('/command', commandRouter);
 
 app.use(errorHandler());
 
