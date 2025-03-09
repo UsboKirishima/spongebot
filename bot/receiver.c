@@ -1,6 +1,13 @@
 #define _GNU_SOURCE
 
 #include "receiver.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <errno.h>
 
 #define SERVER_PORT 8080
 #define BUFFER_SIZE 4096
@@ -18,18 +25,8 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
     if (status != 0)
     {
 #ifdef DEBUG
-        fprintf(stderr, "[http] getaddrinfo error: %s\n", gai_strerror(status));
+        fprintf(stderr, "[receiver] getaddrinfo error: %s\n", gai_strerror(status));
 #endif
-        return -1;
-    }
-
-    *client_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (*client_fd < 0)
-    {
-#ifdef DEBUG
-        perror("[http] Error creating socket");
-#endif
-        freeaddrinfo(res);
         return -1;
     }
 
@@ -40,19 +37,37 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
 
     freeaddrinfo(res);
 
-    if (connect(*client_fd, (struct sockaddr *)server_address, sizeof(*server_address)) < 0)
+    while (1) // Loop trying to connect until connect
     {
+        *client_fd = socket(AF_INET, SOCK_STREAM, 0);
+        if (*client_fd < 0)
+        {
 #ifdef DEBUG
-        perror("[http] Connection failed");
+            perror("[receiver] Error creating socket");
 #endif
-        close(*client_fd);
-        return -1;
-    }
+            return -1;
+        }
 
 #ifdef DEBUG
-    printf("[http] Connected to %s:%d\n", server_host, SERVER_PORT);
+        printf("[receiver] Trying to connect to %s:%d...\n", server_host, SERVER_PORT);
 #endif
-    return 0;
+
+        if (connect(*client_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == 0)
+        {
+#ifdef DEBUG
+            printf("[receiver] Connected to %s:%d\n", server_host, SERVER_PORT);
+#endif
+            return 0; // Exit from loop
+        }
+
+#ifdef DEBUG
+        perror("[receiver] Connection failed");
+        printf("[receiver] Retrying in 2 seconds...\n");
+#endif
+
+        close(*client_fd);
+        sleep(2); 
+    }
 }
 
 ssize_t recv_server_command(int client_fd, char *buffer, size_t buffer_size)
@@ -67,16 +82,17 @@ ssize_t recv_server_command(int client_fd, char *buffer, size_t buffer_size)
         if (bytes_received < 0)
         {
 #ifdef DEBUG
-            perror("[http] Error receiving response");
+            perror("[receiver] Error receiving response");
 #endif
             return -1;
         }
         if (bytes_received == 0)
         {
 #ifdef DEBUG
-            printf("[http] Connection closed by server\n");
+            printf("[receiver] Connection lost, reconnecting...\n");
 #endif
-            break;
+            close(client_fd);
+            return -1;
         }
         total_received += bytes_received;
     }
