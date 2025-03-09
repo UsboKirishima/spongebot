@@ -8,6 +8,8 @@ struct dict_item
 };
 
 #define DICT_DOMAIN_NAME 0
+#define DICT_SERVER_HELLO 1
+
 #define DICT_MAX_ITEMS 10
 
 void dict_init(void);
