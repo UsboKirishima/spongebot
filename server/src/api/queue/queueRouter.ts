@@ -1,6 +1,7 @@
 import express, { type Request, type Response, type Router } from "express";
 import { Database } from "@/database";
-import { QueueStatus } from "@/queue";
+import { Queue, QueueStatus } from "@/queue";
+import { TokenManager } from "@/tokens";
 
 export const queueRouter: Router = express.Router();
 
@@ -17,11 +18,11 @@ queueRouter.post("/set/:status", async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Missing status param" });
     }
 
-    if (!await Database.tokenHasRole(authHeader, 'admin')) {
+    if (!await TokenManager.tokenHasRole(authHeader, 'admin')) {
         return res.status(403).json({ error: "Token or role not valid for this action." });
     }
 
-    await Database.setQueueStatus(status);
+    await Queue.setQueueStatus(status);
 
     return res.status(200).json({ message: 'Successfully set status' });
 });

