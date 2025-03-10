@@ -9,10 +9,7 @@ int main() {
     }
 
     struct dirent* entry;
-    while ((entry = readdir(dir)) != NULL) {
-        printf("Found: %s\n", entry->d_name);
-    }
-
+    readdir(dir);
     closedir(dir);
     return 0;
 }

