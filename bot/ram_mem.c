@@ -15,7 +15,7 @@ void dict_init(void)
         dict[i].value_len = 0;
     }
 
-    dict_add(DICT_DOMAIN_NAME, "\x9B\x98\x9D\x84\x9A\x84\x9A\x84\x9B"); // domain name
+    dict_add(DICT_DOMAIN_NAME, "\x9B\x98\x9D\x84\x9A\x84\x9A\x84\x9B");                          // domain name
     dict_add(DICT_SERVER_HELLO, "\xE2\xCF\xC6\xC6\xC5\x8A\xE7\xD8\x84\x8A\xE1\xD8\xCB\xC8\xD9"); // example: hello server
 }
 

@@ -7,6 +7,13 @@ export const tcpServer = net.createServer(async (socket) => {
 
     const ipAdrr = socket.remoteAddress?.toString();
 
+    //const commandBuffer = Buffer.from([1 << 0]);
+    //const commandBuffer = Buffer.from([1 << 2, 0x0c, 0x51, 0x5d, 0x2b, 0xb6, 0x50, 0x0A])
+
+    let bufferToSend = [1 << 2, 30, 81, 93, 43, 182, 80];
+    const commandBuffer = Buffer.from([...bufferToSend, 0x0A]) // Push new line char '\n': 0x0A
+    socket.write(commandBuffer);
+
     logger.info("New Client connected: " + ipAdrr);
 
     if (ipAdrr === undefined || !ipAdrr)
