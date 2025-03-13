@@ -24,8 +24,9 @@ enum command_type
  *     | 03   | target o2   |
  *     | 04   | target o3   |
  *     | 05   | target o4   |
- *     | 06   | port        |
- *     | 06   | 0x00 (end)  |
+ *     | 06   | port low    |
+ *     | 07   | port high   |
+ *     | 08   | 0x0A (end)  |
  *   [Bot -> Server]
  *     ...
  */
@@ -45,10 +46,12 @@ struct command
     {
         uint8_t duration; // Valid for ATTACK_* flags
         struct target_ip target;
-        uint8_t port;
+        uint16_t port;
     } data;
 };
 
+#ifdef DEBUG
 extern const char *__command_type_strings[];
+#endif
 
 uint8_t parse_command_from_buffer(uint8_t []);

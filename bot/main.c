@@ -17,7 +17,7 @@
 #include "receiver.h"
 #include "command.h"
 
-#define RESPONSE_SIZE 12
+#define RESPONSE_SIZE 16
 
 uint8_t is_connected(int socket_fd)
 {
@@ -117,7 +117,11 @@ int main(int argc, char **argv)
         }
 #endif
 
-        parse_command_from_buffer(buffer);
+        uint8_t is_command_parsed = parse_command_from_buffer(buffer);
+
+#ifdef DEBUG
+        printf("[main] Command parsed result: %s (%d)\n", is_command_parsed ? "Success" : "Error", is_command_parsed);
+#endif
 
         memset(buffer, 0, sizeof(buffer));
         is_first_cycle = 0;
