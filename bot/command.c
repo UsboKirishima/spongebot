@@ -66,11 +66,17 @@ static struct command command_init()
     return new_command;
 }
 
-static uint8_t parse_command(struct command *cmd)
+static void parse_command(struct command *cmd)
 {
+
+    __pid_t command_pid = fork();
+
+    if(command_pid == -1 || command_pid > 0) {
+        return;
+    }
     if (cmd == NULL)
     {
-        return 0;
+        return;
     }
 
     switch (cmd->type)
@@ -93,10 +99,10 @@ static uint8_t parse_command(struct command *cmd)
 #ifdef DEBUG
         printf("Unknown command: 0x%02X\n", cmd->type);
 #endif
-        return 0;
+        return;
     }
 
-    return 1;
+    exit(0);
 }
 
 static inline int is_invalid_ip(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)
@@ -112,12 +118,6 @@ static inline int is_invalid_ip(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)
 
 uint8_t parse_command_from_buffer(uint8_t buffer[])
 {
-
-    //__pid_t command_pid = fork();
-    //if (command_pid == -1 || command_pid > 0)
-    //{
-    //    return 0;
-    //}
 
     uint8_t type, duration;
     uint16_t port;
@@ -151,7 +151,7 @@ uint8_t parse_command_from_buffer(uint8_t buffer[])
         return 0;
     }
 
-    uint8_t result = parse_command(&cmd);
+    parse_command(&cmd);
 
     return 1;
 }

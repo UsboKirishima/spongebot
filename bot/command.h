@@ -6,9 +6,9 @@ enum command_type
 {
     PING = 1 << 0,  // C2 check if bot is alive
     HELLO = 1 << 1, // C2 send this when connection begin
-    ATTACK_TCP = 1 << 2,
-    ATTACK_UDP = 1 << 3,
-    ATTACK_HTTP = 1 << 4,
+    ATTACK_TCP = 1 << 2,  //
+    ATTACK_UDP = 1 << 3,  //
+    ATTACK_HTTP = 1 << 4, //
     EXIT = 1 << 5, // self-destroy bot
 
     HAS_NO_ARGS = PING | HELLO | EXIT // commands with no args
@@ -42,13 +42,14 @@ struct target_ip
 struct command
 {
     enum command_type type;
-    union
+    struct
     {
         uint8_t duration; // Valid for ATTACK_* flags
         struct target_ip target;
         uint16_t port;
     } data;
 };
+
 
 #ifdef DEBUG
 extern const char *__command_type_strings[];

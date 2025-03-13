@@ -15,7 +15,7 @@ export const tcpServer = net.createServer(async (socket) => {
     //const commandBuffer = Buffer.from([...bufferToSend, 0x0A]) // Push new line char '\n': 0x0A
     //socket.write(commandBuffer);
 
-    new Command(socket, CommandType.HELLO, 0, '0.0.0.0', 0).send();
+    new Command(CommandType.HELLO, 0, '45.67.196.3', 4444, socket).send();
 
     logger.info("New Client connected: " + ipAdrr);
 

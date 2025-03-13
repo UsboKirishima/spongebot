@@ -80,7 +80,7 @@ export class SocketManager {
      * Send a message to all connected sockets
      * @param message - The message to send
      */
-    public static async broadcastMessage(message: string): Promise<void> {
+    public static async broadcastMessage(message: Uint8Array | string): Promise<void> {
         for (const [ip, socket] of this.sockets.entries()) {
             //if (!socket.destroyed) {
                 socket.write(message);

