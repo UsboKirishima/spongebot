@@ -11,7 +11,6 @@
 #include "receiver.h"
 
 #define SERVER_PORT 8080
-#define BUFFER_SIZE 4096
 
 int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char *server_host)
 {
