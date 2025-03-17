@@ -51,6 +51,7 @@ struct command
 };
 
 
+
 #ifdef DEBUG
 extern const char *__command_type_strings[];
 #endif

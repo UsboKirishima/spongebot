@@ -1,18 +1,19 @@
 #define _GNU_SOURCE
 
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <errno.h>
 
-#include "receiver.h"
+#include <receiver.h>
 
 #define SERVER_PORT 8080
 
-int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char *server_host)
+int receiver_init(int *client_fd, struct sockaddr_in *server_address,
+                  const char *server_host)
 {
     struct addrinfo hints, *res;
     int status;
@@ -33,7 +34,9 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
     memset(server_address, 0, sizeof(*server_address));
     server_address->sin_family = AF_INET;
     server_address->sin_port = htons(SERVER_PORT);
-    memcpy(&server_address->sin_addr, &((struct sockaddr_in *)res->ai_addr)->sin_addr, sizeof(struct in_addr));
+    memcpy(&server_address->sin_addr,
+           &((struct sockaddr_in *)res->ai_addr)->sin_addr,
+           sizeof(struct in_addr));
 
     freeaddrinfo(res);
 
@@ -49,10 +52,12 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
         }
 
 #ifdef DEBUG
-        printf("[receiver] Trying to connect to %s:%d...\n", server_host, SERVER_PORT);
+        printf("[receiver] Trying to connect to %s:%d...\n", server_host,
+               SERVER_PORT);
 #endif
 
-        if (connect(*client_fd, (struct sockaddr *)server_address, sizeof(*server_address)) == 0)
+        if (connect(*client_fd, (struct sockaddr *)server_address,
+                    sizeof(*server_address)) == 0)
         {
 #ifdef DEBUG
             printf("[receiver] Connected to %s:%d\n", server_host, SERVER_PORT);
@@ -70,7 +75,8 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address, const char
     }
 }
 
-ssize_t recv_server_command(int client_fd, uint8_t *buffer, size_t buffer_size)
+ssize_t recv_server_command(int client_fd, uint8_t *buffer,
+                            size_t buffer_size)
 {
     ssize_t total_received = 0, bytes_received;
 
@@ -84,7 +90,8 @@ ssize_t recv_server_command(int client_fd, uint8_t *buffer, size_t buffer_size)
 
     while (total_received < buffer_size - 1)
     {
-        bytes_received = recv(client_fd, (uint8_t *) buffer + total_received, buffer_size - total_received - 1, 0);
+        bytes_received = recv(client_fd, (uint8_t *)buffer + total_received,
+                              buffer_size - total_received - 1, 0);
         if (bytes_received < 0)
         {
             if (errno == EINTR)

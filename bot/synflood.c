@@ -102,7 +102,7 @@ void initialize_headers(ip *ip, tcphdr *tcp, pseudohdr *pseudoheader)
     srand((unsigned)time(NULL));
 }
 
-void *flood(void *addr)
+void *_flood(void *addr)
 {
     uint8_t buf[100], sendbuf[100];
     int len;
@@ -168,7 +168,7 @@ void start_attack(const char *ip, int port)
 
     for (int i = 0; i < MAXTHREADS; i++)
     {
-        pthread_create(&pthread[i], NULL, flood, &addr);
+        pthread_create(&pthread[i], NULL, _flood, &addr);
     }
 
     for (int i = 0; i < MAXTHREADS; i++)

