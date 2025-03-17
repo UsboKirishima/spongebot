@@ -30,7 +30,7 @@ interface TokenRegex {
 export class Hierarchy {
 
     
-    private static rolePrefixMap: Record<HierarchyRole, string> = {
+    public static rolePrefixMap: Record<HierarchyRole, string> = {
         admin: 'AD',
         operator: 'OP',
         supervisor: 'SV',

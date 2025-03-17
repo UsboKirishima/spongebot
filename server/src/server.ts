@@ -10,6 +10,7 @@ import { env } from "@/common/utils/envConfig";
 import { tokenRouter } from "./api/token/tokenRouter";
 import { queueRouter } from "./api/queue/queueRouter";
 import { commandRouter } from "./api/command/commandRouter";
+import { infoRouter } from "./api/info/infoRouter";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -30,6 +31,7 @@ app.use(requestLogger);
 app.use("/token", tokenRouter);
 app.use("/queue", queueRouter);
 app.use('/command', commandRouter);
+app.use('/info', infoRouter);
 
 app.use(errorHandler());
 

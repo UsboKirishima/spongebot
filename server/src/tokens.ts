@@ -78,6 +78,20 @@ export class TokenManager {
         return (await this.db.get("logins")) || [];
     }
 
+    public static async getNoTokensByRole(role: HierarchyRole): Promise<number> {
+        const logins: ILogin[] = await this.getAllTokens();
+        
+        if(logins == null) return 0;
+
+        const prefix = Hierarchy.rolePrefixMap[role];
+    
+        if (!prefix) return 0;
+    
+        const filteredTokens = logins.filter(login => login.role === role);
+    
+        return filteredTokens.length;
+    }
+
     // Some others shitty mothods for future purposes?
 
     public static async getTokensByRole(role: HierarchyRole): Promise<ILogin[]> {
