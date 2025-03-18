@@ -63,6 +63,8 @@
     "*.dbclient-js": "javascript",
     "socket.h": "c",
     "ram_mem.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "dict.h": "c",
+    "utils.h": "c"
   }
 }

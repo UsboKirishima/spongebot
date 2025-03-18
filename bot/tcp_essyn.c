@@ -20,10 +20,10 @@
 #include <unistd.h>
 
 #include <command.h>
-#include <ram_mem.h>
+#include <dict.h>
 
 #define THREADS_MAX 6
-#define PPS_LIMIT 100000 // -1: no limit
+#define PPS_LIMIT 10000 // -1: no limit
 
 #define MAX_PACKET_SIZE 4096
 #define PHI 0x9e3779b9

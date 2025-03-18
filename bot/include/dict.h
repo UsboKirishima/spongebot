@@ -9,10 +9,12 @@ struct dict_item
 
 #define DICT_DOMAIN_NAME 0
 #define DICT_SERVER_HELLO 1
-
 #define ATK_LOCAL_ADDR 2
+#define UPDATER_URL 3
+#define UPDATER_TMP_FILE 4
+#define UPDATER_VER_FILE 5
 
-#define DICT_MAX_ITEMS 10
+#define DICT_MAX_ITEMS 20
 
 void dict_init(void);
 void dict_add(int index, const char *value);

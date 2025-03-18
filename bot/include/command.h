@@ -57,3 +57,7 @@ extern const char *__command_type_strings[];
 #endif
 
 uint8_t parse_command_from_buffer(uint8_t []);
+
+
+//Attack inits
+void atk_start_tcp_essyn(char *target_ip, int target_port, int duration);

