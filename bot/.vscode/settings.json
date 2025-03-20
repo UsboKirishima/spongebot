@@ -65,6 +65,21 @@
     "ram_mem.h": "c",
     "string.h": "c",
     "dict.h": "c",
-    "utils.h": "c"
+    "utils.h": "c",
+    "in.h": "c",
+    "stdint.h": "c",
+    "charconv": "c",
+    "chrono": "c",
+    "optional": "c",
+    "format": "c",
+    "ratio": "c",
+    "system_error": "c",
+    "array": "c",
+    "functional": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "ranges": "c",
+    "variant": "c"
   }
 }

