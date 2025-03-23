@@ -3,18 +3,20 @@ import express, { type Express } from "express";
 import helmet from "helmet";
 import { pino } from "pino";
 
-import errorHandler from "@/common/middleware/errorHandler";
-import rateLimiter from "@/common/middleware/rateLimiter";
-import requestLogger from "@/common/middleware/requestLogger";
+import errorHandler from "@common/middleware/errorHandler";
+import rateLimiter from "@common/middleware/rateLimiter";
+import requestLogger from "@common/middleware/requestLogger";
 
-import { env } from "@/common/utils/envConfig";
+import { env } from "@common/utils/envConfig";
 
-import { tokenRouter } from "./api/token";
-import { commandRouter } from "./api/command";
-import { infoRouter } from "./api/info";
-import { versionRouter } from "./api/version";
-import { updateRouter } from "./api/update";
-import { pingRouter } from "./api/ping";
+import {
+    tokenRouter,
+    commandRouter,
+    infoRouter,
+    versionRouter,
+    updateRouter,
+    pingRouter
+} from "@api/index";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();

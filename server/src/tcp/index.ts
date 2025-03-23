@@ -1,8 +1,8 @@
 import net from 'net';
-import { logger } from './server';
-import { Database } from './database';
-import { SocketManager } from './clients';
-import { Command, CommandType } from './command';
+import { logger } from '../server';
+import { Database } from '../database';
+import { SocketManager } from '../clients';
+import { Command, CommandType } from '../command';
 
 export const tcpServer = net.createServer(async (socket) => {
 

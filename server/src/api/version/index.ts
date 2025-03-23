@@ -1,6 +1,5 @@
 import express, { type Request, type Response, type Router } from "express";
 import { Database } from "@/database";
-import { Queue, QueueStatus } from "@/queue";
 import { TokenManager } from "@/tokens";
 import { Info } from "@/info";
 

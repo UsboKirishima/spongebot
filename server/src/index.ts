@@ -1,9 +1,11 @@
 import { env } from "@/common/utils/envConfig";
 import { app, logger } from "@/server";
-import { Hierarchy } from "./hierarchy";
-import { Database } from "./database";
-import { tcpServer } from './tcp_server';
-import { TokenManager } from "./tokens";
+
+import { Hierarchy } from "@/hierarchy";
+import { Database } from "@/database";
+import { TokenManager } from "@/tokens";
+
+import { tcpServer } from '@tcp/index';
 
 // HTTP Server
 const server = app.listen(env.HTTP_PORT, async () => {

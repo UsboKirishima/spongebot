@@ -1,7 +1,7 @@
-import { SocketManager } from "./clients";
-import { Command } from "./command";
-import { env } from "./common/utils/envConfig";
-import { TokenManager } from "./tokens";
+import { SocketManager } from "@/clients";
+import { Command } from "@/command";
+import { env } from "@common/utils/envConfig";
+import { TokenManager } from "@/tokens";
 
 interface IInfo {
     cnc_domain: string;

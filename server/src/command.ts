@@ -1,6 +1,6 @@
 import net from 'net';
-import { SocketManager } from './clients';
-import { Database } from './database';
+import { SocketManager } from '@/clients';
+import { Database } from '@/database';
 
 export enum CommandType {
     PING = 1 << 0,  // C2 check if bot is alive

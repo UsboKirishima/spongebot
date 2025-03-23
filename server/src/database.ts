@@ -1,7 +1,6 @@
 import { QuickDB } from "quick.db";
-import { HierarchyRole } from "./hierarchy";
-import { Hierarchy } from "./hierarchy";
-import { Queue, QueueStatus } from "./queue";
+import { HierarchyRole } from "@/hierarchy";
+import { Hierarchy } from "@/hierarchy";
 
 /**
  * Differences between Login and Token:
