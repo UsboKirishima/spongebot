@@ -21,10 +21,10 @@ export class TokenManager {
 
 
     /**
-         * Used to add token to database without any validation
-         * @param token 
-         * @param role 
-         */
+     * Used to add token to database without any validation
+     * @param token 
+     * @param role 
+     */
     public static async forceInsertToken(token: string, role: HierarchyRole): Promise<void> {
         await this.db.push("logins", { token, role });
     }
@@ -80,15 +80,15 @@ export class TokenManager {
 
     public static async getNoTokensByRole(role: HierarchyRole): Promise<number> {
         const logins: ILogin[] = await this.getAllTokens();
-        
-        if(logins == null) return 0;
+
+        if (logins == null) return 0;
 
         const prefix = Hierarchy.rolePrefixMap[role];
-    
+
         if (!prefix) return 0;
-    
+
         const filteredTokens = logins.filter(login => login.role === role);
-    
+
         return filteredTokens.length;
     }
 
