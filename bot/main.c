@@ -3,22 +3,31 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/prctl.h>
-#include <sys/select.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <string.h>
+#include <sys/prctl.h>
+#include <sys/ioctl.h>
+#include <sys/select.h>
 
 #include <dict.h>
 #include <utils.h>
-#include <receiver.h>
 #include <command.h>
 #include <updater.h>
+#include <receiver.h>
 
 #define RESPONSE_SIZE 16
+
+#define ALALALALAL "Hello! If you are reading this it is maybe too late. " \
+                   "This is not just a Drake quote but is real. " \
+                   "You got hacked by Spongebot Botnet. " \
+                   "And you are so stupid that you wanna try to reverse me. " \
+                   "LOL ;=)"
+                   
+char *al = ALALALALAL;
+
 
 uint8_t is_connected(int socket_fd)
 {

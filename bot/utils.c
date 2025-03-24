@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include <utils.h>
@@ -13,10 +13,8 @@ char *get_last_line(const char *str)
     {
         return last_newline + 1;
     }
-    else
-    {
-        return (char *)str;
-    }
+    
+    return (char *)str;
 }
 
 char *ip_to_string(uint8_t o1, uint8_t o2, uint8_t o3, uint8_t o4)

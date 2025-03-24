@@ -80,6 +80,7 @@
     "type_traits": "c",
     "utility": "c",
     "ranges": "c",
-    "variant": "c"
+    "variant": "c",
+    "synflood.h": "c"
   }
 }

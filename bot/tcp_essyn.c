@@ -2,22 +2,22 @@
  * TCP Advanced ESSYN script
  */
 #define _GNU_SOURCE
-#include <arpa/inet.h>
-#include <net/if.h>
+#include <time.h>
+#include <stdio.h>
 #include <netdb.h>
-#include <netinet/if_ether.h>
+#include <net/if.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <pthread.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <netinet/tcp.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <time.h>
-#include <unistd.h>
+#include <netinet/tcp.h>
+#include <netinet/if_ether.h>
 
 #include <command.h>
 #include <dict.h>

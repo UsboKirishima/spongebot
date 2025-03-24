@@ -1,13 +1,13 @@
 #define _GNU_SOURCE
+#include <time.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <string.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
-#include <pthread.h>
 #include <signal.h>
-#include <time.h>
+#include <pthread.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 

@@ -383,10 +383,10 @@ void start_blue_nurse_flood(char *host, int seconds, int psize, int forks)
         return;
     }
 
-    signal(SIGCHLD, SIG_IGN); // Ignore child termination signals
-    signal(SIGPIPE, SIG_IGN); // Ignore broken pipe signals
+    signal(SIGCHLD, SIG_IGN); /* Ignore child termination signals */
+    signal(SIGPIPE, SIG_IGN); /* Ignore broken pipe signals */
 
-    // Forking process based on the provided number of forks
+    /* Forking process based on the provided number of forks */
     for (int i = 0; i < forks; i++)
     {
         if (!fork())

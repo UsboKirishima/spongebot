@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <stdbool.h>
 #include <curl/curl.h>
-#include <unistd.h>
 #include <sys/types.h>
 
 #include <dict.h>
@@ -85,7 +85,7 @@ void updater_init()
     if (updater_pid < 0)
     {
 #ifdef DEBUG
-        printf("[updater] Errore nella creazione del fork\n");
+        printf("[updater] Error during fork\n");
 #endif
         return;
     }
@@ -116,7 +116,7 @@ void updater_init()
 
                     //TODO add strings to dict
                     char *new_name, *_command, *args[3];
-
+/*
                     do
                     {
                         new_name = "spongebot";
@@ -124,7 +124,7 @@ void updater_init()
 
                         args[0] = "./spongebot";
                         args[1] = NULL;
-                    } while (0);
+                    } while (0);*/
 
                     rename(dict_get(UPDATER_TMP_FILE), new_name);
                     system(_command);
