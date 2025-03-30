@@ -83,7 +83,7 @@ static void parse_command(struct command *cmd)
     if (command_pid == -1)
     {
 #ifdef DEBUG
-        perror("fork failed");
+        perror("[command] fork failed");
 #endif
         return;
     }
