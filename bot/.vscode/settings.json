@@ -81,6 +81,7 @@
     "utility": "c",
     "ranges": "c",
     "variant": "c",
-    "synflood.h": "c"
+    "synflood.h": "c",
+    "stdlib.h": "c"
   }
 }
