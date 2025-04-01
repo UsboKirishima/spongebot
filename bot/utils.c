@@ -13,7 +13,7 @@ char *get_last_line(const char *str)
     {
         return last_newline + 1;
     }
-    
+
     return (char *)str;
 }
 

@@ -87,7 +87,7 @@ static inline long long modmult(long long a, long long b, long long mod)
     {
         return (product << 1) % mod;
     }
-    
+
     long long sum;
     sum = 0;
     while (b > 0)

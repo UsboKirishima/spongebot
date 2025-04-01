@@ -4,20 +4,17 @@
 
 #include <stdint.h>
 
-// This is the header file for the library librsaencrypt.a
-
-// Change this line to the file you'd like to use as a source of primes.
-// The format of the file should be one prime per line.
-//TODO: Remove file and generates random primes hardcoded
+// TODO: Remove file and generates random primes hardcoded
 char *PRIME_SOURCE_FILE = "primes.txt";
 
-
-struct public_key_class{
+struct public_key_class
+{
   long long modulus;
   long long exponent;
 };
 
-struct private_key_class{
+struct private_key_class
+{
   long long modulus;
   long long exponent;
 };

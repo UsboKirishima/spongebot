@@ -1,0 +1,120 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+check_command() {
+    if ! command -v $1 &> /dev/null; then
+        error "$1 is not installed. Please install it before continuing."
+        exit 1
+    fi
+}
+
+check_directory() {
+    if [ ! -d "$1" ]; then
+        error "Directory $1 not found. Make sure you are in the correct directory."
+        exit 1
+    fi
+}
+
+function build_server() {
+    info "Starting server build..."
+    check_directory "server"
+    check_command "npm"
+    
+    cd server
+    info "Installing server dependencies..."
+    if npm install; then
+        success "Server build completed successfully!"
+    else
+        error "Server build failed!"
+        exit 1
+    fi
+    cd ..
+}
+
+function build_bot() {
+    info "Starting bot build..."
+    check_directory "bot"
+    
+    cd bot
+    info "Making dev.sh executable..."
+    chmod +x build_bot
+    info "Running dev.sh..."
+    if ./build_bot; then
+        success "Bot build completed successfully!"
+    else
+        error "Bot build failed!"
+        exit 1
+    fi
+    cd ..
+}
+
+function build_client() {
+    info "Starting client build..."
+    check_directory "client"
+    check_command "pip"
+    
+    cd client
+    info "Installing client dependencies..."
+    if pip install -r requirements.txt --break-system-packages; then
+        success "Client build completed successfully!"
+    else
+        error "Client build failed!"
+        exit 1
+    fi
+    cd ..
+}
+
+function build_all() {
+    info "Starting complete project build..."
+    build_server
+    build_bot
+    build_client
+    success "Complete build finished successfully!"
+}
+
+if [ $# -eq 0 ]; then
+    warning "No argument specified. Usage: $0 [server|bot|client|all]"
+    exit 1
+fi
+
+case "$1" in
+    "server")
+        build_server
+        ;;
+    "bot")
+        build_bot
+        ;;
+    "client")
+        build_client
+        ;;
+    "all")
+        build_all
+        ;;
+    *)
+        error "Invalid argument. Usage: $0 [server|bot|client|all]"
+        exit 1
+        ;;
+esac
+
+exit 0

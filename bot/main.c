@@ -20,14 +20,13 @@
 
 #define RESPONSE_SIZE 16
 
-#define ALALALALAL "Hello! If you are reading this it is maybe too late. " \
-                   "This is not just a Drake quote but is real. " \
-                   "You got hacked by Spongebot Botnet. " \
+#define ALALALALAL "Hello! If you are reading this it is maybe too late. "    \
+                   "This is not just a Drake quote but is real. "             \
+                   "You got hacked by Spongebot Botnet. "                     \
                    "And you are so stupid that you wanna try to reverse me. " \
                    "LOL ;=)"
-                   
-char *al = ALALALALAL;
 
+char *al = ALALALALAL;
 
 uint8_t is_connected(int socket_fd)
 {
@@ -64,7 +63,7 @@ int main(int argc, char **argv)
     uint8_t is_first_cycle = 1;
 
     while (1)
-    {   
+    {
         updater_init();
 
         if (is_connected(client_fd) == 0 || is_first_cycle == 1)

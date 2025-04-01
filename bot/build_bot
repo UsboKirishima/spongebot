@@ -1,0 +1,6 @@
+#!/bin/bash
+
+rm -rf build
+mkdir build
+
+gcc -std=c99 -s -Iinclude -Wall -lcurl $(find . -name "*.c") -o build/bot

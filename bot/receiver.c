@@ -40,7 +40,7 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address,
 
     freeaddrinfo(res);
 
-    while (1) // Loop trying to connect until connect
+    while (1)
     {
         *client_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (*client_fd < 0)
@@ -62,7 +62,7 @@ int receiver_init(int *client_fd, struct sockaddr_in *server_address,
 #ifdef DEBUG
             printf("[receiver] Connected to %s:%d\n", server_host, SERVER_PORT);
 #endif
-            return 0; // Exit from loop
+            return 0;
         }
 
 #ifdef DEBUG

